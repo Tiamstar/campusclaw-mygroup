@@ -1,0 +1,22 @@
+services:
+  app:
+    build: .
+    environment:
+      SECRET_KEY: ${SECRET_KEY:?Set SECRET_KEY in .env}
+      SEED_TEACHER_PASSWORD: ${SEED_TEACHER_PASSWORD:-}
+      SEED_STUDENT_PASSWORD: ${SEED_STUDENT_PASSWORD:-}
+      COOKIE_SECURE: ${COOKIE_SECURE:-false}
+      DATA_DIR: /srv/data
+    volumes:
+      - app_data:/srv/data
+    ports:
+      - "8000:8000"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=3)"]
+      interval: 15s
+      timeout: 5s
+      start_period: 15s
+      retries: 3
+
+volumes:
+  app_data:

@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}知识库检索 · {{ classroom.name }}{% endblock %}
+{% block content %}
+<div class="breadcrumbs"><a href="{{ url_for('auth.index') }}">我的班级</a><span aria-hidden="true">/</span><a href="{{ url_for('materials.materials_page', class_id=classroom.id) }}">{{ classroom.name }}</a><span aria-hidden="true">/</span><span>知识库检索</span></div>
+<section class="page-hero compact-hero"><div class="hero-copy"><span class="section-kicker">CLASSROOM / KNOWLEDGE</span><h1>查找课堂知识<span class="title-period">.</span></h1><p>只检索 {{ classroom.name }} 已上传材料中的文字。</p></div><div class="hero-seal" aria-hidden="true">知</div></section>
+<section class="content-section" aria-labelledby="search-heading">
+  <div class="section-heading"><div><span class="section-kicker">SEARCH / CLASS ONLY</span><h2 id="search-heading">本班知识库</h2></div></div>
+  <form method="get" action="{{ url_for('knowledge.search_page', class_id=classroom.id) }}" class="search-form"><label for="knowledge-query">检索关键词</label><div><input id="knowledge-query" name="q" value="{{ query }}" maxlength="100" required placeholder="例如：光合作用"><button class="button button-primary" type="submit">搜索</button></div></form>
+  {% if query %}<p class="search-summary">“{{ query }}” · {{ results|length }} 条结果（最多展示 20 条）</p>{% endif %}
+  {% if results %}<div class="search-results">{% for item in results %}<article class="search-result"><span class="section-kicker">SOURCE / {{ '%02d'|format(loop.index) }}</span><h3><a href="{{ item.detail_url }}">{{ item.title }}</a></h3><p>{{ item.excerpt }}</p><div><a href="{{ item.detail_url }}">查看正文 →</a><a href="{{ item.download_url }}">下载原材料 ↗</a></div></article>{% endfor %}</div>{% elif query %}<div class="empty-state"><h3>暂未找到相关内容</h3><p>试试其他关键词。搜索范围仅限当前班级已入库材料。</p></div>{% endif %}
+</section>
+{% endblock %}

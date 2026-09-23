@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}上传材料 · {{ classroom.name }}{% endblock %}
+{% block content %}
+<div class="breadcrumbs"><a href="{{ url_for('auth.index') }}">我的班级</a><span aria-hidden="true">/</span><a href="{{ url_for('materials.materials_page', class_id=classroom.id) }}">{{ classroom.name }}</a><span aria-hidden="true">/</span><span>上传材料</span></div>
+<section class="page-hero compact-hero"><div class="hero-copy"><span class="section-kicker">CONTRIBUTE / MATERIALS</span><h1>分享一份好材料<span class="title-period">.</span></h1><p>上传到 {{ classroom.name }} 的知识库，让班级成员随时查阅。</p></div><div class="hero-seal hero-seal-upload" aria-hidden="true">＋</div></section>
+<section class="upload-layout" aria-labelledby="upload-heading">
+  <div class="upload-card"><div class="upload-card-head"><span class="section-kicker">NEW MATERIAL</span><h2 id="upload-heading">上传教学材料</h2><p>选择文件，确认无误后即可发布到班级。</p></div>
+    <form method="post" enctype="multipart/form-data" action="{{ url_for('materials.upload', class_id=classroom.id) }}" data-list-url="{{ url_for('materials.materials_page', class_id=classroom.id) }}" data-login-url="{{ url_for('auth.login') }}" id="upload-form">
+      <input type="hidden" name="csrf_token" value="{{ csrf }}">
+      <label class="dropzone" for="material-file"><span class="dropzone-icon" aria-hidden="true">↑</span><strong id="file-label">点击选择教学材料</strong><span id="file-hint">支持 PDF、TXT、Markdown（.md）</span><input id="material-file" type="file" name="file" accept=".pdf,.txt,.md" required></label>
+      <div class="upload-meta"><span>发布至 <strong>{{ classroom.name }}</strong></span><span>文件上限 10 MB</span></div>
+      <div class="form-error" id="upload-error" role="alert" hidden></div>
+      <div class="upload-actions"><a class="button button-quiet" href="{{ url_for('materials.materials_page', class_id=classroom.id) }}">返回列表</a><button class="button button-primary" type="submit" id="upload-submit">确认上传 <span aria-hidden="true">↗</span></button></div>
+    </form>
+  </div>
+  <aside class="upload-guide"><span class="section-kicker">BEFORE YOU UPLOAD</span><h3>上传须知</h3><div class="guide-item"><span>01</span><p><strong>支持的文件</strong>PDF、UTF-8 文本及 Markdown 文件。</p></div><div class="guide-item"><span>02</span><p><strong>仅限本班</strong>材料发布后，仅当前班级成员可查看和下载。</p></div><div class="guide-item"><span>03</span><p><strong>认真检查</strong>确认内容与班级无误后再上传。</p></div></aside>
+</section>
+<script src="{{ url_for('static', filename='upload.js') }}" defer></script>
+{% endblock %}

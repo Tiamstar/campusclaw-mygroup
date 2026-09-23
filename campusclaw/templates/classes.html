@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}我的班级{% endblock %}
+{% block content %}
+<section class="page-hero">
+  <div class="hero-copy"><span class="section-kicker">CLASSROOM / 01</span><h1>你好，{{ user.username }}<span class="title-period">.</span></h1><p>从这里进入你的班级，继续探索属于这堂课的知识。</p></div>
+  <div class="hero-art" aria-hidden="true"><span>知</span><span>识</span><span>共</span><span>享</span></div>
+</section>
+<section class="content-section" aria-labelledby="class-heading">
+  <div class="section-heading"><div><span class="section-kicker">MY CLASSROOMS</span><h2 id="class-heading">我的班级 <span class="count-mark">{{ '%02d'|format(classes|length) }}</span></h2></div><p>每个班级都是独立的材料空间</p></div>
+  {% if classes %}
+  <div class="class-grid">
+    {% for cls in classes %}
+    <a class="class-card" href="{{ url_for('materials.materials_page', class_id=cls.id) }}">
+      <div class="class-card-top"><span class="class-index">CLASS / {{ '%02d'|format(loop.index) }}</span><span class="card-arrow" aria-hidden="true">↗</span></div>
+      <div class="class-card-center"><span class="class-emblem" aria-hidden="true">{{ cls.name[:1] }}</span><h3>{{ cls.name }}</h3><p>进入班级，查看专属教学材料</p></div>
+      <div class="class-card-bottom"><span>教学材料库</span><span>查看材料 <span aria-hidden="true">→</span></span></div>
+    </a>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="empty-state"><span class="empty-icon" aria-hidden="true">◇</span><h3>还没有加入班级</h3><p>请联系教学空间管理员，为你的账号分配班级。</p></div>
+  {% endif %}
+</section>
+{% endblock %}

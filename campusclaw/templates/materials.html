@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}{{ classroom.name }} · 教学材料{% endblock %}
+{% block content %}
+<div class="breadcrumbs"><a href="{{ url_for('auth.index') }}">我的班级</a><span aria-hidden="true">/</span><span>{{ classroom.name }}</span></div>
+<section class="page-hero compact-hero"><div class="hero-copy"><span class="section-kicker">CLASSROOM / MATERIALS</span><h1>{{ classroom.name }}<span class="title-period">.</span></h1><p>这个班级的课堂资料，都整理在这里。</p></div><div class="hero-seal" aria-hidden="true">{{ classroom.name[:1] }}</div></section>
+<section class="content-section" aria-labelledby="materials-heading">
+  <div class="section-heading"><div><span class="section-kicker">KNOWLEDGE LIBRARY</span><h2 id="materials-heading">教学材料 <span class="count-mark">{{ '%02d'|format(records|length) }}</span></h2></div><div class="heading-actions"><a class="button button-outline" href="{{ url_for('knowledge.search_page', class_id=classroom.id) }}">检索知识库 ↗</a>{% if user.role == 'teacher' %}<a class="button button-primary" href="{{ url_for('materials.upload_page', class_id=classroom.id) }}">＋ 上传材料</a>{% endif %}</div></div>
+  {% if records %}
+  <div class="materials-list">
+    <div class="list-head"><span>材料名称</span><span>上传时间</span><span>操作</span></div>
+    {% for record in records %}
+    {% set extension = record.original_name.rsplit('.', 1)[-1]|upper %}
+    <div class="material-row"><div class="material-primary"><span class="file-icon file-{{ extension|lower }}" aria-hidden="true">{{ extension }}</span><div class="file-info"><strong>{{ record.original_name }}</strong><small>{{ extension }} 文件 · 班级专属</small></div></div><time datetime="{{ record.created_at.isoformat() }}">{{ record.created_at.strftime('%Y-%m-%d') }}</time><a class="download-link" href="{{ url_for('materials.download', class_id=classroom.id, material_id=record.id) }}" aria-label="下载 {{ record.original_name }}">下载 <span aria-hidden="true">↗</span></a></div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="empty-state"><span class="empty-icon" aria-hidden="true">▤</span><h3>这里还没有材料</h3><p>{% if user.role == 'teacher' %}上传第一份教学材料，让知识从这里开始积累。{% else %}教师上传材料后，就会出现在这里。{% endif %}</p>{% if user.role == 'teacher' %}<a class="button button-outline" href="{{ url_for('materials.upload_page', class_id=classroom.id) }}">上传第一份材料 <span aria-hidden="true">↗</span></a>{% endif %}</div>
+  {% endif %}
+  <div class="privacy-note"><span aria-hidden="true">✳</span><span>材料仅对本班成员开放，下载与查看均需登录。</span></div>
+</section>
+{% endblock %}

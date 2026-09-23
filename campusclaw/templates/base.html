@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#94070a">
+  <title>{% block title %}CampusClaw{% endblock %} · 教学材料空间</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='app.css') }}">
+</head>
+<body>
+  <div class="site-wrap">
+    <header class="site-header">
+      <div class="header-inner">
+        <a class="brand" href="{{ url_for('auth.index') }}" aria-label="CampusClaw 首页">
+          <span class="brand-mark" aria-hidden="true">C<span>·</span></span>
+          <span class="brand-copy"><strong>CampusClaw</strong><small>教学材料空间</small></span>
+        </a>
+        <nav class="header-nav" aria-label="主导航">
+          <a href="{{ url_for('auth.index') }}" {% if request.endpoint == 'auth.index' %}aria-current="page"{% endif %}>我的班级</a>
+          <span class="nav-divider" aria-hidden="true"></span>
+          <span class="user-chip"><span class="user-dot" aria-hidden="true"></span>{{ user.username }} <span class="user-role">· {{ '教师' if user.role == 'teacher' else '学生' }}</span></span>
+          <form method="post" action="{{ url_for('auth.logout') }}" class="logout-form">
+            <input type="hidden" name="csrf_token" value="{{ csrf }}">
+            <button class="text-button" type="submit">退出登录</button>
+          </form>
+        </nav>
+      </div>
+    </header>
+    <main id="main-content" class="page-main">{% block content %}{% endblock %}</main>
+    <footer class="site-footer"><span>CampusClaw <span aria-hidden="true">/</span> 让好材料，留在对的班级</span><span>专注每一堂课</span></footer>
+  </div>
+</body>
+</html>

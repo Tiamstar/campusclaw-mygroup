@@ -1,0 +1,27 @@
+[project]
+name = "campusclaw-mygroup"
+version = "0.1.0"
+description = "Class-scoped teaching materials knowledge base"
+requires-python = ">=3.12"
+dependencies = [
+    "Flask>=3.1,<4",
+    "Flask-SQLAlchemy>=3.1,<4",
+    "pypdf>=6,<7",
+    "gunicorn>=26,<27",
+]
+
+[project.optional-dependencies]
+test = ["pytest>=9,<10"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[build-system]
+requires = ["setuptools>=70"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["campusclaw"]
+
+[tool.setuptools.package-data]
+campusclaw = ["templates/*.html", "static/*.css", "static/*.js"]

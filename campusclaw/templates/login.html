@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#94070a">
+  <title>登录 · CampusClaw 教学材料空间</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='app.css') }}">
+</head>
+<body class="login-body">
+  <main class="login-layout">
+    <section class="login-story" aria-label="平台介绍">
+      <div class="story-inner">
+        <div class="story-brand"><span class="brand-mark brand-mark-light" aria-hidden="true">C<span>·</span></span><span>CampusClaw <small>教学材料空间</small></span></div>
+        <div class="story-content">
+          <span class="story-eyebrow"><span class="eyebrow-line"></span> YOUR CLASS, YOUR SPACE</span>
+          <h1>每一份材料，<br>都有它的<span>归属。</span></h1>
+          <p>把课堂里的知识认真收好。教师安心分享，学生便捷查阅，让教学材料只在属于它的班级流转。</p>
+          <div class="story-features"><span>01&nbsp; 班级专属</span><span>02&nbsp; 材料共建</span><span>03&nbsp; 安心访问</span></div>
+        </div>
+        <div class="story-foot">为日常教学而设计 <span aria-hidden="true">✳</span> 从这里开始</div>
+      </div>
+      <div class="story-orbit story-orbit-one" aria-hidden="true"></div>
+      <div class="story-orbit story-orbit-two" aria-hidden="true"></div>
+      <div class="story-vertical" aria-hidden="true">KNOWLEDGE BELONGS TO EVERY CLASS</div>
+    </section>
+    <section class="login-panel" aria-labelledby="login-title">
+      <div class="login-card">
+        <span class="section-kicker">欢迎回来 <span aria-hidden="true">—</span> WELCOME BACK</span>
+        <h2 id="login-title">登录你的空间<span class="title-period">.</span></h2>
+        <p class="login-intro">使用教师或学生账号，继续你的课堂旅程。</p>
+        {% if error %}<div class="form-error" role="alert">{{ error }}</div>{% endif %}
+        <form method="post" action="{{ url_for('auth.login', next=next_path) }}" class="login-form">
+          <input type="hidden" name="csrf_token" value="{{ csrf }}">
+          <div class="field"><label for="username">账号</label><input id="username" name="username" type="text" autocomplete="username" placeholder="输入你的账号" value="{{ username|default('', true) }}" required autofocus></div>
+          <div class="field"><label for="password">密码</label><input id="password" name="password" type="password" autocomplete="current-password" placeholder="输入你的密码" required></div>
+          <button class="button button-primary login-submit" type="submit">进入教学空间 <span aria-hidden="true">↗</span></button>
+        </form>
+        <div class="login-help"><span class="help-icon" aria-hidden="true">i</span> 账号由教学空间管理员提供；请妥善保管密码。</div>
+      </div>
+      <div class="login-corner">CAMPUSCLAW <span aria-hidden="true">·</span> CLASSROOM KNOWLEDGE</div>
+    </section>
+  </main>
+</body>
+</html>

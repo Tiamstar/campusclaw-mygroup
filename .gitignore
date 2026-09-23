@@ -1,2 +1,10 @@
 .DS_Store
 .agents/
+.venv/
+.env
+__pycache__/
+.pytest_cache/
+*.pyc
+*.egg-info/
+instance/
+*.db

@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+{% block title %}{{ document.title }} · 知识库{% endblock %}
+{% block content %}
+<div class="breadcrumbs"><a href="{{ url_for('auth.index') }}">我的班级</a><span aria-hidden="true">/</span><a href="{{ url_for('materials.materials_page', class_id=classroom.id) }}">{{ classroom.name }}</a><span aria-hidden="true">/</span><a href="{{ url_for('knowledge.search_page', class_id=classroom.id) }}">知识库</a><span aria-hidden="true">/</span><span>正文</span></div>
+<section class="page-hero compact-hero"><div class="hero-copy"><span class="section-kicker">KNOWLEDGE / SOURCE</span><h1>{{ document.title }}</h1><p>来源：{{ classroom.name }} · 教学材料 #{{ source.material_id }}</p></div></section>
+<section class="content-section"><div class="section-heading"><div><span class="section-kicker">EXTRACTED TEXT</span><h2>材料正文</h2></div><a class="button button-outline" href="{{ source.download_url }}">下载原材料 ↗</a></div><div class="document-body">{% if document.body %}<pre>{{ document.body }}</pre>{% else %}<p>这份旧材料没有可提取的文字，请下载原材料查看。</p>{% endif %}</div></section>
+{% endblock %}
