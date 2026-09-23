@@ -5,7 +5,7 @@
 ## ADDED Requirements
 
 ### Requirement: 应用可通过 Docker Compose 启动
-项目 SHALL 提供 Dockerfile 和 Docker Compose 配置，使应用可通过单条 Compose 命令启动。Compose SHALL 从服务端环境变量注入配置，并 SHALL 为 SQLite 数据库和上传文件挂载持久化卷。
+项目 SHALL 提供 Dockerfile 和 Docker Compose 配置，使单实例应用可通过单条 Compose 命令启动。Compose SHALL 从服务端环境变量注入配置，并 SHALL 为 SQLite 数据库及上传文件挂载同一主机上的持久化卷；本期不支持多实例共享 SQLite 文件。
 
 #### Scenario: 配置完整时启动
 - **WHEN** 操作者提供必需环境变量并执行 `docker compose up --build`
