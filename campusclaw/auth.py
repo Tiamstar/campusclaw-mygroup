@@ -9,7 +9,7 @@ from flask import Blueprint, abort, current_app, g, jsonify, redirect, render_te
 from sqlalchemy import delete, select
 from werkzeug.security import check_password_hash, generate_password_hash
 
-from .models import LoginAttempt, LoginSession, User, db, utcnow
+from .models import ClassMembership, LoginAttempt, LoginSession, User, db, utcnow
 
 
 auth = Blueprint("auth", __name__)
@@ -146,9 +146,13 @@ def login():
         session["auth_token"] = token
         session["csrf"] = secrets.token_urlsafe(32)
         session.permanent = True
+        memberships = list(db.session.execute(select(ClassMembership.class_id).where(
+            ClassMembership.user_id == user.id,
+        )).scalars())
         db.session.add(LoginSession(
             token_digest=_digest(token),
             user_id=user.id,
+            active_class_id=memberships[0] if len(memberships) == 1 else None,
             expires_at=utcnow() + timedelta(hours=8),
         ))
         db.session.commit()

@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}智能检索与问答 · {{ classroom.name }}{% endblock %}
+{% block content %}
+<div class="breadcrumbs"><a href="{{ url_for('auth.index') }}">我的班级</a><span>/</span><a href="{{ url_for('materials.materials_page', class_id=classroom.id) }}">{{ classroom.name }}</a><span>/</span><span>智能检索与问答</span></div>
+<section class="page-hero compact-hero"><div class="hero-copy"><span class="section-kicker">TRACEABLE / RAG</span><h1>有出处的课堂答案<span class="title-period">.</span></h1><p>只在 {{ classroom.name }} 的材料切片中检索；无依据时不会调用生成模型。</p></div><div class="hero-seal" aria-hidden="true">索</div></section>
+<section class="retrieval-grid" data-retrieval-root data-search-url="{{ url_for('retrieval.search_api') }}" data-ask-url="{{ url_for('retrieval.ask') }}" data-login-url="{{ url_for('auth.login') }}">
+  <div class="retrieval-main">
+    <form id="retrieval-form" class="search-form retrieval-form">
+      <label for="retrieval-query">检索本班材料</label>
+      <textarea id="retrieval-query" maxlength="500" required placeholder="例如：植物如何把光能转化为化学能？"></textarea>
+      <div class="retrieval-controls">
+        <fieldset><legend>检索模式</legend><label><input type="radio" name="mode" value="hybrid" checked> 混合</label><label><input type="radio" name="mode" value="keyword"> 关键词</label><label><input type="radio" name="mode" value="vector"> 向量</label></fieldset>
+        <div><button class="button button-outline" type="submit">检索出处</button><button class="button button-primary" type="button" data-action="ask">依据资料回答</button></div>
+      </div>
+      <p id="retrieval-error" class="form-error" role="alert" hidden></p>
+    </form>
+    <section class="answer-card" id="answer-card" hidden aria-live="polite"><span class="section-kicker">ANSWER / GROUNDED</span><h2>资料回答</h2><p id="answer-text"></p></section>
+    <div id="retrieval-status" class="search-summary" aria-live="polite"></div>
+    <div id="retrieval-results" class="search-results"></div>
+  </div>
+  <aside class="retrieval-aside">
+    <div class="retrieval-note"><span class="section-kicker">HOW IT WORKS</span><h2>可追溯检索</h2><p>关键词查原词，向量查语义改写，混合模式以 RRF 融合两路名次。每条结果都指回原材料。</p></div>
+    {% if user.role == 'teacher' %}
+    <form id="reindex-form" class="reindex-card" data-index-prefix="/api/materials/" data-csrf="{{ csrf }}">
+      <span class="section-kicker">TEACHER / REINDEX</span><h2>重建切片索引</h2>
+      <label for="reindex-material">材料</label><select id="reindex-material" required>{% for record in records %}<option value="{{ record.id }}">{{ record.original_name }}</option>{% endfor %}</select>
+      <label for="reindex-strategy">切分策略</label><select id="reindex-strategy"><option value="auto">自动窗口</option><option value="custom">按句号</option><option value="hierarchy">Markdown 标题</option></select>
+      <button class="button button-outline" type="submit" {% if not records %}disabled{% endif %}>重建索引</button><p id="reindex-status" aria-live="polite"></p>
+    </form>
+    {% endif %}
+  </aside>
+</section>
+<script src="{{ url_for('static', filename='retrieval.js') }}" defer></script>
+{% endblock %}

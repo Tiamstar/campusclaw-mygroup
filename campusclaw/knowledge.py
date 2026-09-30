@@ -63,6 +63,9 @@ def initialize_knowledge_index():
             document.body = body
     db.session.flush()
     db.session.commit()
+    from .retrieval import initialize_chunk_index
+
+    initialize_chunk_index()
 
 
 def _term():

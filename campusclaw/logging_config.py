@@ -13,7 +13,10 @@ SENSITIVE_FIELDS = re.compile(
 class SensitiveLogFilter(logging.Filter):
     def filter(self, record):
         message = record.getMessage()
-        for key in ("SECRET_KEY", "SEED_TEACHER_PASSWORD", "SEED_STUDENT_PASSWORD"):
+        for key in (
+            "SECRET_KEY", "SEED_TEACHER_PASSWORD", "SEED_STUDENT_PASSWORD",
+            "MODEL_API_KEY", "EMBEDDING_API_KEY", "CHAT_API_KEY", "QDRANT_API_KEY",
+        ):
             value = os.environ.get(key)
             if value:
                 message = message.replace(value, "[REDACTED]")

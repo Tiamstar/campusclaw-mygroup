@@ -181,10 +181,16 @@ def test_cookie_and_safe_return_path(client):
 def test_sensitive_values_are_redacted_from_application_logs(app, monkeypatch, caplog):
     monkeypatch.setenv("SECRET_KEY", "unique-local-secret-for-log-test")
     monkeypatch.setenv("SEED_TEACHER_PASSWORD", "unique-teacher-password-for-log-test")
+    monkeypatch.setenv("EMBEDDING_API_KEY", "unique-model-key-for-log-test")
     with caplog.at_level("WARNING", logger=app.logger.name):
-        app.logger.warning("secret_key=%s password=%s cookie=abc", "unique-local-secret-for-log-test", "unique-teacher-password-for-log-test")
+        app.logger.warning(
+            "secret_key=%s password=%s api_key=%s cookie=abc",
+            "unique-local-secret-for-log-test", "unique-teacher-password-for-log-test",
+            "unique-model-key-for-log-test",
+        )
     text = caplog.text
     assert "unique-local-secret-for-log-test" not in text
     assert "unique-teacher-password-for-log-test" not in text
+    assert "unique-model-key-for-log-test" not in text
     assert "cookie=abc" not in text
     assert "[REDACTED]" in text

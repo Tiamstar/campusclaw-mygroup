@@ -2,7 +2,7 @@
 
 价值主张：为教师和学生提供具备账号登录、角色权限与班级数据隔离的课程材料知识库，让教学资料能够安全地按班级沉淀和共享。
 核心场景：教师登录后向所属班级上传教学材料并写入知识库，教师和学生可查询本班材料，学生上传或任何跨班访问均由服务端拒绝。
-本学期不做：不实现语义搜索、检索问答、RAG、对话助手、作业提交与批改、成绩管理、超级管理员、SSO、多因素认证及生产级高可用部署；本期只做本班关键词检索。
+当前版本在原有班级关键词检索上新增可追溯切片检索：支持关键词、向量与 RRF 混合模式，并提供“有本班依据才调用模型”的简短问答。仍不实现流式长对话、OCR、作业提交与批改、成绩管理、超级管理员、SSO、多因素认证及生产级高可用部署。
 
 ## 本地开发（可选）
 
@@ -24,9 +24,27 @@ export SECRET_KEY='替换为随机生成的长密钥'
 ```bash
 docker compose up --build -d
 docker compose exec app flask --app campusclaw:create_app seed-demo
+docker compose exec app flask --app campusclaw:create_app seed-demo-materials
 docker compose ps
 curl http://localhost:8000/health
 ```
+
+Compose 只向宿主机公开 Nginx 的 `8000` 端口；应用和 Qdrant 仅位于内部网络。首次升级已有数据卷后，可回填正文切片：
+
+```bash
+docker compose exec app flask --app campusclaw:create_app reindex-knowledge
+```
+
+未配置嵌入网关时，上传和回填仍建立关键词切片索引，向量与混合接口返回 503。课程网关使用 `EMBEDDING_BASE_URL`、`EMBEDDING_API_KEY`、`EMBEDDING_MODEL=course-embedding`、`EMBEDDING_DIM=2048` 和 `CHAT_MODEL=course-chat`；聊天默认复用同一 base URL 与密钥，也可用 `CHAT_BASE_URL`、`CHAT_API_KEY` 单独覆盖。密钥只进入应用容器，不会写入浏览器或 Qdrant payload。
+
+检索 API 使用登录会话在服务端记录的活动班级，不接受请求中的 `class_id` 作为授权依据：
+
+```text
+POST /api/retrieval/search  {"query":"光合作用","mode":"keyword|vector|hybrid"}
+POST /api/ask               {"query":"植物如何制造养分？"}
+```
+
+多班用户须先用带 CSRF 令牌的 `POST /api/session/active-class` 选择已有成员关系的班级；该值保存在服务端 `sessions` 表，不写入身份 Cookie。
 
 演示账号为 `teacher_a`、`student_a`、`student_b`；前两者属于 A 班，后者属于 B 班。演示密码只从 `.env` 的 `SEED_TEACHER_PASSWORD` 和 `SEED_STUDENT_PASSWORD` 读取，初始化命令可重复运行且不会覆盖已有密码。退出或过期的会话不可重用。
 

@@ -188,6 +188,14 @@ def upload(class_id):
         if temporary:
             temporary.unlink(missing_ok=True)
         raise
+    try:
+        from .retrieval import ensure_document_index
+
+        ensure_document_index(db.session.execute(select(KnowledgeDocument).where(
+            KnowledgeDocument.material_id == record.id,
+        )).scalar_one())
+    except Exception as error:
+        current_app.logger.warning("Material %s saved but retrieval indexing failed: %s", record.id, type(error).__name__)
     return jsonify(material=_as_json(record)), 201
 
 
