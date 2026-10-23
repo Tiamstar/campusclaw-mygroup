@@ -17,6 +17,7 @@
         </a>
         <nav class="header-nav" aria-label="主导航">
           <a href="{{ url_for('auth.index') }}" {% if request.endpoint == 'auth.index' %}aria-current="page"{% endif %}>我的班级</a>
+          <a href="{{ url_for('apps.page') }}" {% if request.endpoint == 'apps.page' %}aria-current="page"{% endif %}>AI 应用</a>
           <span class="nav-divider" aria-hidden="true"></span>
           <span class="user-chip"><span class="user-dot" aria-hidden="true"></span>{{ user.username }} <span class="user-role">· {{ '教师' if user.role == 'teacher' else '学生' }}</span></span>
           <form method="post" action="{{ url_for('auth.logout') }}" class="logout-form">

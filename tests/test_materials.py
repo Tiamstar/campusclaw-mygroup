@@ -61,14 +61,14 @@ def test_teacher_upload_and_class_scoped_read(app, client):
         assert {record.id for record in records} == {document.material_id for document in documents}
         assert all(record.class_id == own_class and record.status == "ready" for record in records)
         assert all(document.body.strip() for document in documents)
-    assert client.get(f"/api/classes/{other_class}/materials").status_code == 403
-    assert client.get(f"/api/classes/{other_class}/materials/{material_id}").status_code == 403
+    assert client.get(f"/api/classes/{other_class}/materials").status_code == 404
+    assert client.get(f"/api/classes/{other_class}/materials/{material_id}").status_code == 404
     assert client.get(f"/api/classes/{own_class}/materials/999999").status_code == 404
     download = client.get(f"/classes/{own_class}/materials/{material_id}/download")
     assert download.status_code == 200
     assert download.headers["Content-Disposition"].startswith("attachment;")
     assert download.headers["X-Content-Type-Options"] == "nosniff"
-    assert client.get(f"/classes/{other_class}/materials/{material_id}/download").status_code == 403
+    assert client.get(f"/classes/{other_class}/materials/{material_id}/download").status_code == 404
 
 
 def test_student_cannot_upload_even_without_csrf(app, client):
@@ -86,9 +86,9 @@ def test_student_cannot_upload_even_without_csrf(app, client):
 def test_teacher_cross_class_and_csrf_rejected(app, client):
     classes = class_ids(app)
     login(client, "teacher_a")
-    assert upload(client, classes["B班"]).status_code == 403
+    assert upload(client, classes["B班"]).status_code == 404
     assert upload(client, classes["A班"], token="invalid").status_code == 400
-    assert upload(client, classes["A班"], class_id=str(classes["B班"])).status_code == 403
+    assert upload(client, classes["A班"], class_id=str(classes["B班"])).status_code == 404
     with app.app_context():
         assert db.session.query(Material).count() == 0
     assert not os.listdir(app.config["UPLOAD_DIR"])
@@ -132,7 +132,7 @@ def test_list_visible_to_same_class_student_and_membership_revocation(app, clien
         membership = db.session.execute(select(ClassMembership).where(ClassMembership.user_id == user.id)).scalar_one()
         db.session.delete(membership)
         db.session.commit()
-    assert student.get(f"/classes/{class_id}/materials/{material_id}/download").status_code == 403
+    assert student.get(f"/classes/{class_id}/materials/{material_id}/download").status_code == 404
     other = app.test_client()
     login(other, "student_b")
     assert other.get(f"/api/classes/{class_ids(app)['B班']}/materials").json["materials"] == []
@@ -238,12 +238,12 @@ def test_knowledge_search_body_source_and_isolation(app, client):
     page = student.get(source["detail_url"])
     assert b"&lt;script&gt;" in page.data
     assert b"<script>alert(1)</script>" not in page.data
-    assert student.get(f"/api/classes/{other_class}/knowledge/search?q=光合作用").status_code == 403
+    assert student.get(f"/api/classes/{other_class}/knowledge/search?q=光合作用").status_code == 404
     other = app.test_client()
     login(other, "student_b")
     assert other.get(f"/api/classes/{other_class}/knowledge/documents/{source['document_id']}").status_code == 404
     assert other.get(f"/api/classes/{other_class}/knowledge/search?q=光合作用").json["results"] == []
-    assert other.get(source["download_url"]).status_code == 403
+    assert other.get(source["download_url"]).status_code == 404
     for query in ("", "a" * 101, "hi%0Abad", "hi%0A"):
         assert student.get(f"/api/classes/{own_class}/knowledge/search?q={query}").status_code == 400
     assert student.get(f"/classes/{own_class}/knowledge/search?q=").status_code == 400
@@ -256,8 +256,8 @@ def test_knowledge_search_body_source_and_isolation(app, client):
         membership = db.session.execute(select(ClassMembership).where(ClassMembership.user_id == user.id)).scalar_one()
         db.session.delete(membership)
         db.session.commit()
-    assert student.get(url).status_code == 403
-    assert student.get(source["detail_url"]).status_code == 403
+    assert student.get(url).status_code == 404
+    assert student.get(source["detail_url"]).status_code == 404
 
 
 def test_existing_database_backfills_text_without_losing_session(tmp_path, monkeypatch):

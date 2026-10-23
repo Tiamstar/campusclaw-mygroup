@@ -15,6 +15,7 @@ dependencies = [
 
 [project.optional-dependencies]
 test = ["pytest>=9,<10"]
+report = ["reportlab>=4,<5"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

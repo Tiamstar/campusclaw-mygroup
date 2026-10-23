@@ -268,7 +268,7 @@ def test_retrieval_page_and_role_scoped_reindex_ui(app, client):
     student_page = student.get(f"/classes/{class_id}/retrieval")
     assert student_page.status_code == 200
     assert b'id="reindex-form"' not in student_page.data
-    assert student.get(f"/classes/{class_ids(app)['B班']}/retrieval").status_code == 403
+    assert student.get(f"/classes/{class_ids(app)['B班']}/retrieval").status_code == 404
 
 
 def test_json_gateway_retries_transient_errors(monkeypatch):

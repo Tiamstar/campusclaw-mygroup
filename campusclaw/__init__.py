@@ -71,6 +71,12 @@ def create_app(test_config=None):
     from .retrieval import retrieval
 
     app.register_blueprint(retrieval)
+    from .mcp import mcp
+    from .apps import apps
+    app.register_blueprint(mcp)
+    app.register_blueprint(apps)
+    from .api_docs import api_docs
+    app.register_blueprint(api_docs)
 
     @app.get("/health")
     def health():

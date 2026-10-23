@@ -45,6 +45,18 @@ services:
     expose:
       - "6333"
 
+  mcp-demo:
+    build: ./mcp-server
+    environment:
+      MCP_AUTH_TOKEN: ${MCP_AUTH_TOKEN:?Set MCP_AUTH_TOKEN in .env}
+    expose:
+      - "8090"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8090/health', timeout=3)"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+
 volumes:
   app_data:
   qdrant_data:

@@ -47,6 +47,8 @@ def csrf_token():
 
 
 def require_csrf():
+    if request.headers.get("Authorization", "").startswith("Bearer ") and current_user():
+        return
     supplied = request.headers.get("X-CSRF-Token") or request.form.get("csrf_token", "")
     expected = session.get("csrf", "")
     if not expected or not hmac.compare_digest(expected, supplied):
@@ -58,7 +60,8 @@ def current_user():
         g.user_loaded = True
         g.user = None
         g.login_session = None
-        token = session.get("auth_token")
+        bearer = request.headers.get("Authorization", "")
+        token = bearer[7:] if bearer.startswith("Bearer ") else session.get("auth_token")
         if token:
             record = db.session.execute(
                 select(LoginSession).where(LoginSession.token_digest == _digest(token))
@@ -69,6 +72,51 @@ def current_user():
                     g.user = user
                     g.login_session = record
     return g.user
+
+
+@auth.post("/api/login")
+def api_login():
+    payload = request.get_json(silent=True) or {}
+    username = payload.get("username", "")
+    password = payload.get("password", "")
+    if not isinstance(username, str) or not isinstance(password, str):
+        return jsonify(error="invalid_credentials"), 401
+    now = utcnow()
+    db.session.execute(delete(LoginAttempt).where(LoginAttempt.window_start < now - timedelta(minutes=15)))
+    attempt = db.session.get(LoginAttempt, _login_key(username))
+    user = db.session.execute(select(User).where(User.username == username)).scalar_one_or_none()
+    valid = check_password(user.password_hash if user else current_app.extensions["dummy_password_hash"], password)
+    if not user or not user.is_active or not valid or (attempt and attempt.failed_count >= 5):
+        if not attempt:
+            attempt = LoginAttempt(key_digest=_login_key(username), failed_count=0, window_start=now)
+            db.session.add(attempt)
+        attempt.failed_count = min(5, attempt.failed_count + 1)
+        db.session.commit()
+        return jsonify(error="invalid_credentials"), 401
+    if attempt:
+        db.session.delete(attempt)
+    memberships = list(db.session.execute(select(ClassMembership.class_id).where(
+        ClassMembership.user_id == user.id,
+    )).scalars())
+    token = secrets.token_urlsafe(32)
+    db.session.add(LoginSession(
+        token_digest=_digest(token), user_id=user.id,
+        active_class_id=memberships[0] if len(memberships) == 1 else None,
+        expires_at=now + timedelta(hours=8),
+    ))
+    db.session.commit()
+    return jsonify(access_token=token, token_type="Bearer", expires_in=28800,
+                   active_class_id=memberships[0] if len(memberships) == 1 else None)
+
+
+@auth.post("/api/logout")
+def api_logout():
+    if not current_user():
+        return jsonify(error="unauthorized"), 401
+    require_csrf()
+    g.login_session.revoked_at = utcnow()
+    db.session.commit()
+    return jsonify(status="ok")
 
 
 def protected(api=True, teacher=False):

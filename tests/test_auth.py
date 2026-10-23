@@ -98,7 +98,7 @@ def test_students_login_and_cross_class_access(app, client):
     assert client.get(f"/classes/{classes['A班']}/materials").status_code == 302
     assert client.get(f"/api/classes/{classes['A班']}/materials").status_code == 401
     assert login(client, "student_b").status_code == 302
-    assert client.get(f"/api/classes/{classes['A班']}/materials").status_code == 403
+    assert client.get(f"/api/classes/{classes['A班']}/materials").status_code == 404
     assert client.get(f"/api/classes/{classes['B班']}/materials").status_code == 200
 
 

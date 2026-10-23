@@ -38,6 +38,7 @@ form.addEventListener('submit', async (event) => {
     const messages = {
       400: '文件无效。请上传非空的 PDF，或 UTF-8 编码的 TXT / MD 文件。',
       403: '你没有向该班级上传材料的权限。',
+      404: '未找到该班级或材料。',
       413: '文件不能超过 10 MB，请选择更小的文件。',
     };
     errorBox.textContent = messages[response.status] || '上传失败，请稍后重试。';

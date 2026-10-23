@@ -163,6 +163,27 @@ class ChatClient:
         except (KeyError, IndexError, TypeError) as error:
             raise DependencyUnavailable("invalid_chat_response") from error
 
+    def stream(self, messages):
+        payload = {"model": self.model, "messages": messages, "stream": True,
+                   "temperature": 0.2, "max_tokens": 800}
+        headers = {"Content-Type": "application/json", "Accept": "text/event-stream"}
+        if self.gateway.api_key:
+            headers["Authorization"] = f"Bearer {self.gateway.api_key}"
+        req = urllib.request.Request(self.gateway.base_url + "/chat/completions",
+                                     data=json.dumps(payload, ensure_ascii=False).encode(), headers=headers)
+        try:
+            with urllib.request.urlopen(req, timeout=self.gateway.timeout) as response:
+                for raw in response:
+                    line = raw.decode("utf-8").strip()
+                    if not line.startswith("data: ") or line == "data: [DONE]":
+                        continue
+                    event = json.loads(line[6:])
+                    content = event.get("choices", [{}])[0].get("delta", {}).get("content")
+                    if content:
+                        yield content
+        except (OSError, ValueError, KeyError, IndexError) as error:
+            raise DependencyUnavailable("chat_stream_failed") from error
+
 
 def initialize_chunk_index():
     connection = db.session.connection()
@@ -272,7 +293,7 @@ def choose_active_class():
         ClassMembership.user_id == g.user.id, ClassMembership.class_id == chosen,
     )).scalar_one_or_none()
     if membership is None:
-        abort(403)
+        abort(404)
     g.login_session.active_class_id = chosen
     db.session.commit()
     return jsonify(active_class_id=chosen)
@@ -289,7 +310,7 @@ def retrieval_page(class_id):
         ClassMembership.user_id == g.user.id, ClassMembership.class_id == class_id,
     )).scalar_one_or_none()
     if membership is None:
-        abort(403)
+        abort(404)
     g.login_session.active_class_id = class_id
     db.session.commit()
     records = db.session.execute(select(Material).where(

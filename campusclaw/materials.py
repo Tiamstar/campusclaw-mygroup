@@ -26,7 +26,7 @@ def require_class(class_id):
         ClassMembership.class_id == class_id,
     )).scalar_one_or_none()
     if not membership:
-        abort(403)
+        abort(404)
 
 
 def _get_material(class_id, material_id):
@@ -156,7 +156,7 @@ def upload(class_id):
     require_csrf()
     require_class(class_id)
     if "class_id" in request.form and request.form["class_id"] != str(class_id):
-        abort(403)
+        abort(404)
     file = request.files.get("file")
     if not file:
         abort(400)

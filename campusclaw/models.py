@@ -101,3 +101,69 @@ class KnowledgeChunk(db.Model):
         CheckConstraint("vector_status IN ('pending', 'ready', 'failed', 'disabled')"),
         Index("ix_chunks_class_active_status", "class_id", "is_active", "index_status"),
     )
+
+
+class PromptTemplate(db.Model):
+    __tablename__ = "prompt_templates"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    class_id: Mapped[int] = mapped_column(ForeignKey("classes.id"), nullable=False)
+    app_key: Mapped[str] = mapped_column(db.String(40), nullable=False)
+    name: Mapped[str] = mapped_column(db.String(100), nullable=False)
+    content: Mapped[str] = mapped_column(db.Text, nullable=False)
+    created_by: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
+    __table_args__ = (UniqueConstraint("class_id", "app_key", "name"),)
+
+
+class Skill(db.Model):
+    __tablename__ = "skills"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    class_id: Mapped[int] = mapped_column(ForeignKey("classes.id"), nullable=False)
+    name: Mapped[str] = mapped_column(db.String(100), nullable=False)
+    description: Mapped[str] = mapped_column(db.String(500), nullable=False)
+    content: Mapped[str] = mapped_column(db.Text, nullable=False)
+    tools_json: Mapped[str] = mapped_column(db.Text, nullable=False, default="[]")
+    created_by: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
+    __table_args__ = (UniqueConstraint("class_id", "name"),)
+
+
+class Conversation(db.Model):
+    __tablename__ = "conversations"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    class_id: Mapped[int] = mapped_column(ForeignKey("classes.id"), nullable=False)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
+    app_key: Mapped[str] = mapped_column(db.String(40), nullable=False)
+    prompt_id: Mapped[int | None] = mapped_column(ForeignKey("prompt_templates.id"))
+    skill_id: Mapped[int | None] = mapped_column(ForeignKey("skills.id"))
+    builtin_skill: Mapped[str | None] = mapped_column(db.String(40))
+    created_at: Mapped[datetime] = mapped_column(db.DateTime, default=utcnow, nullable=False)
+
+
+class ConversationMessage(db.Model):
+    __tablename__ = "conversation_messages"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    conversation_id: Mapped[int] = mapped_column(ForeignKey("conversations.id"), nullable=False)
+    role: Mapped[str] = mapped_column(db.String(20), nullable=False)
+    content: Mapped[str] = mapped_column(db.Text, nullable=False)
+    created_at: Mapped[datetime] = mapped_column(db.DateTime, default=utcnow, nullable=False)
+
+
+class MCPServer(db.Model):
+    __tablename__ = "mcp_servers"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    class_id: Mapped[int] = mapped_column(ForeignKey("classes.id"), nullable=False)
+    name: Mapped[str] = mapped_column(db.String(80), nullable=False)
+    base_url: Mapped[str] = mapped_column(db.String(500), nullable=False)
+    auth_token: Mapped[str] = mapped_column(db.String(500), nullable=False)
+    connected: Mapped[bool] = mapped_column(default=False, nullable=False)
+    tools_json: Mapped[str] = mapped_column(db.Text, nullable=False, default="[]")
+    __table_args__ = (UniqueConstraint("class_id", "name"),)
+
+
+class MCPAudit(db.Model):
+    __tablename__ = "mcp_audits"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    class_id: Mapped[int] = mapped_column(ForeignKey("classes.id"), nullable=False)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
+    tool_ref: Mapped[str] = mapped_column(db.String(180), nullable=False)
+    status: Mapped[str] = mapped_column(db.String(20), nullable=False)
+    created_at: Mapped[datetime] = mapped_column(db.DateTime, default=utcnow, nullable=False)

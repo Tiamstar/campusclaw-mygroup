@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}AI 应用平台{% endblock %}
+{% block content %}
+<div class="breadcrumbs"><a href="{{ url_for('auth.index') }}">我的班级</a><span>/</span><span>AI 应用平台</span></div>
+<section class="page-hero compact-hero"><div class="hero-copy"><span class="section-kicker">AI APPLICATIONS</span><h1>{{ classroom.name }} · AI 应用平台<span class="title-period">.</span></h1><p>选择应用与技能，基于本班材料对话。每条回答显示检索出处和工具调用状态。</p></div></section>
+<section class="retrieval-grid" id="apps-root" data-csrf="{{ csrf }}">
+ <div class="retrieval-main">
+  <form id="chat-start" class="search-form retrieval-form">
+   <label>应用 <select id="app-key"></select></label>
+   <label>提示词模板 <select id="prompt-id"><option value="">使用应用默认提示词</option></select></label>
+   <label>技能 <select id="skill-id"><option value="">使用应用默认技能</option></select></label>
+   <button class="button button-outline" type="submit">新建会话</button>
+  </form>
+  <section class="answer-card" id="chat-panel" hidden>
+   <h2>会话 <span id="conversation-label"></span></h2>
+   <div id="chat-history" aria-live="polite"></div>
+   <form id="chat-send"><label for="chat-query">你的问题</label><textarea id="chat-query" maxlength="500" required></textarea><button class="button button-primary" type="submit">发送并流式回答</button></form>
+   <p id="chat-status" role="status"></p><div id="chat-citations"></div><div id="chat-tools"></div>
+  </section>
+ </div>
+ <aside class="retrieval-aside">
+  <div class="retrieval-note"><h2>本班知识库</h2><p>每次先检索，最多四个相关切片进入模型消息。资料不足时直接告知。</p></div>
+  {% if user.role == 'teacher' %}
+  <form id="prompt-form" class="reindex-card"><h2>提示词模板</h2><select id="prompt-edit"><option value="">新建模板</option></select><input name="name" placeholder="模板名称" required maxlength="100"><select name="app_key" id="prompt-app"></select><textarea name="content" placeholder="提示词，可使用 {{ '{{question}}' }}" required maxlength="4000"></textarea><button class="button button-outline">保存模板</button></form>
+  <form id="skill-form" class="reindex-card"><h2>新增或上传技能</h2><select id="skill-edit"><option value="">新建技能</option></select><input name="name" placeholder="技能名称" required maxlength="100"><input name="description" placeholder="用途" required maxlength="500"><textarea name="content" placeholder="技能说明；上传文件时可留空" maxlength="8000"></textarea><input type="file" name="file" accept=".md"><input name="tools" placeholder="工具引用，逗号分隔，例如 knowledge_search,formula_hint@campus_tools"><button class="button button-outline">保存技能</button></form>
+  <form id="mcp-form" class="reindex-card"><h2>登记 MCP 服务器</h2><input name="name" placeholder="服务器名称，如 campus_tools" required><input name="base_url" placeholder="http://mcp-demo:8090" required><input name="auth_token" type="password" autocomplete="off" placeholder="Bearer 令牌" required><button class="button button-outline">登记</button></form>
+  <div class="reindex-card"><h2>MCP 服务器与工具</h2><div id="mcp-servers"></div><h3>调用审计</h3><div id="mcp-audits"></div></div>
+  {% endif %}
+ </aside>
+</section>
+<script src="{{ url_for('static', filename='apps.js') }}" defer></script>
+{% endblock %}
