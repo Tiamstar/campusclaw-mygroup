@@ -1,0 +1,23 @@
+{
+  "uploaded_documents": [
+    "limit-01.md",
+    "limit-02.md",
+    "limit-03.md",
+    "limit-04.md",
+    "limit-05.md",
+    "limit-06.md"
+  ],
+  "sent_chunk_count": 4,
+  "sent_titles": [
+    "limit-01.md",
+    "limit-02.md",
+    "limit-03.md",
+    "limit-04.md"
+  ],
+  "omitted_titles": [
+    "limit-05.md",
+    "limit-06.md"
+  ],
+  "query": "知识库截断验证",
+  "model": "openai/gpt-4o-mini"
+}

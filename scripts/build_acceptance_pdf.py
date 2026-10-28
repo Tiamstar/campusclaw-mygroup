@@ -3,6 +3,7 @@ import html
 import re
 from pathlib import Path
 
+from PIL import Image as PILImage
 from reportlab.lib import colors
 from reportlab.lib.enums import TA_CENTER
 from reportlab.lib.pagesizes import A4
@@ -10,7 +11,7 @@ from reportlab.lib.styles import ParagraphStyle
 from reportlab.lib.units import mm
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
+from reportlab.platypus import Image, KeepTogether, SimpleDocTemplate, Paragraph, Spacer
 
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE = ROOT / "docs" / "acceptance-report.md"
@@ -33,6 +34,9 @@ styles = {
     "code": ParagraphStyle("code", fontSize=8.3, leading=13, leftIndent=9, rightIndent=9,
                            borderPadding=7, backColor=colors.HexColor("#f3f5f6"),
                            spaceBefore=4, spaceAfter=10, **base),
+    "caption": ParagraphStyle("caption", fontSize=9, leading=14, alignment=TA_CENTER,
+                              spaceAfter=12, textColor=colors.HexColor("#52616d"),
+                              fontName="WQY", wordWrap="CJK"),
 }
 
 
@@ -68,6 +72,20 @@ def build_story():
             continue
         if in_code:
             code.append(line)
+            continue
+        figure = re.fullmatch(r"!\[(.+?)\]\(([^)]+)\)", line.strip())
+        if figure:
+            flush_paragraph()
+            image_path = (SOURCE.parent / figure.group(2)).resolve()
+            if not image_path.is_relative_to(ROOT) or not image_path.is_file():
+                raise FileNotFoundError(image_path)
+            with PILImage.open(image_path) as bitmap:
+                width, height = bitmap.size
+            scale = min((174 * mm) / width, (145 * mm) / height)
+            illustration = Image(str(image_path), width=width * scale, height=height * scale)
+            illustration.hAlign = "CENTER"
+            story.append(KeepTogether([illustration, Spacer(1, 4 * mm),
+                                       Paragraph(inline(figure.group(1)), styles["caption"])]))
             continue
         if not line.strip():
             flush_paragraph()

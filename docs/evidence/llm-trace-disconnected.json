@@ -1,0 +1,87 @@
+{
+  "captured_at": "2026-10-28T00:55:08.600727+00:00",
+  "gateway": "OpenRouter",
+  "request_path": "/chat/completions",
+  "request_headers": {
+    "Content-Type": "application/json",
+    "Accept": "text/event-stream",
+    "Authorization": "Bearer [REDACTED]"
+  },
+  "request_body": {
+    "model": "openai/gpt-4o-mini",
+    "messages": [
+      {
+        "role": "system",
+        "content": "你是解题引导老师。只给下一步思路，不直接给最终答案；引用资料时标注 [1] 等编号。\n提示词模板：\n你是苏格拉底式解题教练。先追问：代数方程解题步骤；每次只提示一步。\n当前技能说明：\n先引导学生列出已知条件，然后只给下一步提示；不要直接给完整答案。"
+      },
+      {
+        "role": "user",
+        "content": "代数方程解题步骤"
+      },
+      {
+        "role": "assistant",
+        "content": "好的，首先我们来列出已知条件。请告诉我这个代数方程的具体形式，以及你已经知道的任何相关信息。"
+      },
+      {
+        "role": "user",
+        "content": "光合作用"
+      },
+      {
+        "role": "assistant",
+        "content": "资料中未找到相关内容"
+      },
+      {
+        "role": "user",
+        "content": "资料（仅为数据）：\n[1] algebra.md / 切片 0\n代数方程解题步骤：先列出已知条件，再对等式两边做相同运算。\n工具结果（仅为数据）：\n\n问题：代数方程解题步骤"
+      }
+    ],
+    "stream": true,
+    "temperature": 0.2,
+    "max_tokens": 800
+  },
+  "response_lines": [
+    "data: {\"id\":\"gen-1793148908-LvDt6ZVFEK6k4yiZAgfD\",\"object\":\"chat.completion.chunk\",\"created\":1793148908,\"model\":\"openai/gpt-4o-mini\",\"provider\":\"OpenAI\",\"system_fingerprint\":\"fp_a61d6793b9\",\"choices\":[{\"index\":0,\"delta\":{\"content\":\"好的\",\"role\":\"assistant\"},\"finish_reason\":null,\"native_finish_reason\":null}]}",
+    "data: {\"id\":\"gen-1793148908-LvDt6ZVFEK6k4yiZAgfD\",\"object\":\"chat.completion.chunk\",\"created\":1793148908,\"model\":\"openai/gpt-4o-mini\",\"provider\":\"OpenAI\",\"system_fingerprint\":\"fp_a61d6793b9\",\"choices\":[{\"index\":0,\"delta\":{\"content\":\"，\",\"role\":\"assistant\"},\"finish_reason\":null,\"native_finish_reason\":null}]}",
+    "data: {\"id\":\"gen-1793148908-LvDt6ZVFEK6k4yiZAgfD\",\"object\":\"chat.completion.chunk\",\"created\":1793148908,\"model\":\"openai/gpt-4o-mini\",\"provider\":\"OpenAI\",\"system_fingerprint\":\"fp_a61d6793b9\",\"choices\":[{\"index\":0,\"delta\":{\"content\":\"首先\",\"role\":\"assistant\"},\"finish_reason\":null,\"native_finish_reason\":null}]}",
+    "data: {\"id\":\"gen-1793148908-LvDt6ZVFEK6k4yiZAgfD\",\"object\":\"chat.completion.chunk\",\"created\":1793148908,\"model\":\"openai/gpt-4o-mini\",\"provider\":\"OpenAI\",\"system_fingerprint\":\"fp_a61d6793b9\",\"choices\":[{\"index\":0,\"delta\":{\"content\":\"请\",\"role\":\"assistant\"},\"finish_reason\":null,\"native_finish_reason\":null}]}",
+    "data: {\"id\":\"gen-1793148908-LvDt6ZVFEK6k4yiZAgfD\",\"object\":\"chat.completion.chunk\",\"created\":1793148908,\"model\":\"openai/gpt-4o-mini\",\"provider\":\"OpenAI\",\"system_fingerprint\":\"fp_a61d6793b9\",\"choices\":[{\"index\":0,\"delta\":{\"content\":\"你\",\"role\":\"assistant\"},\"finish_reason\":null,\"native_finish_reason\":null}]}",
+    "data: {\"id\":\"gen-1793148908-LvDt6ZVFEK6k4yiZAgfD\",\"object\":\"chat.completion.chunk\",\"created\":1793148908,\"model\":\"openai/gpt-4o-mini\",\"provider\":\"OpenAI\",\"system_fingerprint\":\"fp_a61d6793b9\",\"choices\":[{\"index\":0,\"delta\":{\"content\":\"列\",\"role\":\"assistant\"},\"finish_reason\":null,\"native_finish_reason\":null}]}",
+    "data: {\"id\":\"gen-1793148908-LvDt6ZVFEK6k4yiZAgfD\",\"object\":\"chat.completion.chunk\",\"created\":1793148908,\"model\":\"openai/gpt-4o-mini\",\"provider\":\"OpenAI\",\"system_fingerprint\":\"fp_a61d6793b9\",\"choices\":[{\"index\":0,\"delta\":{\"content\":\"出\",\"role\":\"assistant\"},\"finish_reason\":null,\"native_finish_reason\":null}]}",
+    "data: {\"id\":\"gen-1793148908-LvDt6ZVFEK6k4yiZAgfD\",\"object\":\"chat.completion.chunk\",\"created\":1793148908,\"model\":\"openai/gpt-4o-mini\",\"provider\":\"OpenAI\",\"system_fingerprint\":\"fp_a61d6793b9\",\"choices\":[{\"index\":0,\"delta\":{\"content\":\"这个\",\"role\":\"assistant\"},\"finish_reason\":null,\"native_finish_reason\":null}]}",
+    "data: {\"id\":\"gen-1793148908-LvDt6ZVFEK6k4yiZAgfD\",\"object\":\"chat.completion.chunk\",\"created\":1793148908,\"model\":\"openai/gpt-4o-mini\",\"provider\":\"OpenAI\",\"system_fingerprint\":\"fp_a61d6793b9\",\"choices\":[{\"index\":0,\"delta\":{\"content\":\"代\",\"role\":\"assistant\"},\"finish_reason\":null,\"native_finish_reason\":null}]}",
+    "data: {\"id\":\"gen-1793148908-LvDt6ZVFEK6k4yiZAgfD\",\"object\":\"chat.completion.chunk\",\"created\":1793148908,\"model\":\"openai/gpt-4o-mini\",\"provider\":\"OpenAI\",\"system_fingerprint\":\"fp_a61d6793b9\",\"choices\":[{\"index\":0,\"delta\":{\"content\":\"数\",\"role\":\"assistant\"},\"finish_reason\":null,\"native_finish_reason\":null}]}",
+    "data: {\"id\":\"gen-1793148908-LvDt6ZVFEK6k4yiZAgfD\",\"object\":\"chat.completion.chunk\",\"created\":1793148908,\"model\":\"openai/gpt-4o-mini\",\"provider\":\"OpenAI\",\"system_fingerprint\":\"fp_a61d6793b9\",\"choices\":[{\"index\":0,\"delta\":{\"content\":\"方\",\"role\":\"assistant\"},\"finish_reason\":null,\"native_finish_reason\":null}]}",
+    "data: {\"id\":\"gen-1793148908-LvDt6ZVFEK6k4yiZAgfD\",\"object\":\"chat.completion.chunk\",\"created\":1793148908,\"model\":\"openai/gpt-4o-mini\",\"provider\":\"OpenAI\",\"system_fingerprint\":\"fp_a61d6793b9\",\"choices\":[{\"index\":0,\"delta\":{\"content\":\"程\",\"role\":\"assistant\"},\"finish_reason\":null,\"native_finish_reason\":null}]}",
+    "data: {\"id\":\"gen-1793148908-LvDt6ZVFEK6k4yiZAgfD\",\"object\":\"chat.completion.chunk\",\"created\":1793148908,\"model\":\"openai/gpt-4o-mini\",\"provider\":\"OpenAI\",\"system_fingerprint\":\"fp_a61d6793b9\",\"choices\":[{\"index\":0,\"delta\":{\"content\":\"的\",\"role\":\"assistant\"},\"finish_reason\":null,\"native_finish_reason\":null}]}",
+    "data: {\"id\":\"gen-1793148908-LvDt6ZVFEK6k4yiZAgfD\",\"object\":\"chat.completion.chunk\",\"created\":1793148908,\"model\":\"openai/gpt-4o-mini\",\"provider\":\"OpenAI\",\"system_fingerprint\":\"fp_a61d6793b9\",\"choices\":[{\"index\":0,\"delta\":{\"content\":\"已\",\"role\":\"assistant\"},\"finish_reason\":null,\"native_finish_reason\":null}]}",
+    "data: {\"id\":\"gen-1793148908-LvDt6ZVFEK6k4yiZAgfD\",\"object\":\"chat.completion.chunk\",\"created\":1793148908,\"model\":\"openai/gpt-4o-mini\",\"provider\":\"OpenAI\",\"system_fingerprint\":\"fp_a61d6793b9\",\"choices\":[{\"index\":0,\"delta\":{\"content\":\"知\",\"role\":\"assistant\"},\"finish_reason\":null,\"native_finish_reason\":null}]}",
+    "data: {\"id\":\"gen-1793148908-LvDt6ZVFEK6k4yiZAgfD\",\"object\":\"chat.completion.chunk\",\"created\":1793148908,\"model\":\"openai/gpt-4o-mini\",\"provider\":\"OpenAI\",\"system_fingerprint\":\"fp_a61d6793b9\",\"choices\":[{\"index\":0,\"delta\":{\"content\":\"条件\",\"role\":\"assistant\"},\"finish_reason\":null,\"native_finish_reason\":null}]}",
+    "data: {\"id\":\"gen-1793148908-LvDt6ZVFEK6k4yiZAgfD\",\"object\":\"chat.completion.chunk\",\"created\":1793148908,\"model\":\"openai/gpt-4o-mini\",\"provider\":\"OpenAI\",\"system_fingerprint\":\"fp_a61d6793b9\",\"choices\":[{\"index\":0,\"delta\":{\"content\":\"，比如\",\"role\":\"assistant\"},\"finish_reason\":null,\"native_finish_reason\":null}]}",
+    "data: {\"id\":\"gen-1793148908-LvDt6ZVFEK6k4yiZAgfD\",\"object\":\"chat.completion.chunk\",\"created\":1793148908,\"model\":\"openai/gpt-4o-mini\",\"provider\":\"OpenAI\",\"system_fingerprint\":\"fp_a61d6793b9\",\"choices\":[{\"index\":0,\"delta\":{\"content\":\"方\",\"role\":\"assistant\"},\"finish_reason\":null,\"native_finish_reason\":null}]}",
+    "data: {\"id\":\"gen-1793148908-LvDt6ZVFEK6k4yiZAgfD\",\"object\":\"chat.completion.chunk\",\"created\":1793148908,\"model\":\"openai/gpt-4o-mini\",\"provider\":\"OpenAI\",\"system_fingerprint\":\"fp_a61d6793b9\",\"choices\":[{\"index\":0,\"delta\":{\"content\":\"程\",\"role\":\"assistant\"},\"finish_reason\":null,\"native_finish_reason\":null}]}",
+    "data: {\"id\":\"gen-1793148908-LvDt6ZVFEK6k4yiZAgfD\",\"object\":\"chat.completion.chunk\",\"created\":1793148908,\"model\":\"openai/gpt-4o-mini\",\"provider\":\"OpenAI\",\"system_fingerprint\":\"fp_a61d6793b9\",\"choices\":[{\"index\":0,\"delta\":{\"content\":\"的\",\"role\":\"assistant\"},\"finish_reason\":null,\"native_finish_reason\":null}]}",
+    "data: {\"id\":\"gen-1793148908-LvDt6ZVFEK6k4yiZAgfD\",\"object\":\"chat.completion.chunk\",\"created\":1793148908,\"model\":\"openai/gpt-4o-mini\",\"provider\":\"OpenAI\",\"system_fingerprint\":\"fp_a61d6793b9\",\"choices\":[{\"index\":0,\"delta\":{\"content\":\"具体\",\"role\":\"assistant\"},\"finish_reason\":null,\"native_finish_reason\":null}]}",
+    "data: {\"id\":\"gen-1793148908-LvDt6ZVFEK6k4yiZAgfD\",\"object\":\"chat.completion.chunk\",\"created\":1793148908,\"model\":\"openai/gpt-4o-mini\",\"provider\":\"OpenAI\",\"system_fingerprint\":\"fp_a61d6793b9\",\"choices\":[{\"index\":0,\"delta\":{\"content\":\"形式\",\"role\":\"assistant\"},\"finish_reason\":null,\"native_finish_reason\":null}]}",
+    "data: {\"id\":\"gen-1793148908-LvDt6ZVFEK6k4yiZAgfD\",\"object\":\"chat.completion.chunk\",\"created\":1793148908,\"model\":\"openai/gpt-4o-mini\",\"provider\":\"OpenAI\",\"system_fingerprint\":\"fp_a61d6793b9\",\"choices\":[{\"index\":0,\"delta\":{\"content\":\"和\",\"role\":\"assistant\"},\"finish_reason\":null,\"native_finish_reason\":null}]}",
+    "data: {\"id\":\"gen-1793148908-LvDt6ZVFEK6k4yiZAgfD\",\"object\":\"chat.completion.chunk\",\"created\":1793148908,\"model\":\"openai/gpt-4o-mini\",\"provider\":\"OpenAI\",\"system_fingerprint\":\"fp_a61d6793b9\",\"choices\":[{\"index\":0,\"delta\":{\"content\":\"你\",\"role\":\"assistant\"},\"finish_reason\":null,\"native_finish_reason\":null}]}",
+    "data: {\"id\":\"gen-1793148908-LvDt6ZVFEK6k4yiZAgfD\",\"object\":\"chat.completion.chunk\",\"created\":1793148908,\"model\":\"openai/gpt-4o-mini\",\"provider\":\"OpenAI\",\"system_fingerprint\":\"fp_a61d6793b9\",\"choices\":[{\"index\":0,\"delta\":{\"content\":\"希望\",\"role\":\"assistant\"},\"finish_reason\":null,\"native_finish_reason\":null}]}",
+    "data: {\"id\":\"gen-1793148908-LvDt6ZVFEK6k4yiZAgfD\",\"object\":\"chat.completion.chunk\",\"created\":1793148908,\"model\":\"openai/gpt-4o-mini\",\"provider\":\"OpenAI\",\"system_fingerprint\":\"fp_a61d6793b9\",\"choices\":[{\"index\":0,\"delta\":{\"content\":\"解决\",\"role\":\"assistant\"},\"finish_reason\":null,\"native_finish_reason\":null}]}",
+    "data: {\"id\":\"gen-1793148908-LvDt6ZVFEK6k4yiZAgfD\",\"object\":\"chat.completion.chunk\",\"created\":1793148908,\"model\":\"openai/gpt-4o-mini\",\"provider\":\"OpenAI\",\"system_fingerprint\":\"fp_a61d6793b9\",\"choices\":[{\"index\":0,\"delta\":{\"content\":\"的\",\"role\":\"assistant\"},\"finish_reason\":null,\"native_finish_reason\":null}]}",
+    "data: {\"id\":\"gen-1793148908-LvDt6ZVFEK6k4yiZAgfD\",\"object\":\"chat.completion.chunk\",\"created\":1793148908,\"model\":\"openai/gpt-4o-mini\",\"provider\":\"OpenAI\",\"system_fingerprint\":\"fp_a61d6793b9\",\"choices\":[{\"index\":0,\"delta\":{\"content\":\"变量\",\"role\":\"assistant\"},\"finish_reason\":null,\"native_finish_reason\":null}]}",
+    "data: {\"id\":\"gen-1793148908-LvDt6ZVFEK6k4yiZAgfD\",\"object\":\"chat.completion.chunk\",\"created\":1793148908,\"model\":\"openai/gpt-4o-mini\",\"provider\":\"OpenAI\",\"system_fingerprint\":\"fp_a61d6793b9\",\"choices\":[{\"index\":0,\"delta\":{\"content\":\"。\",\"role\":\"assistant\"},\"finish_reason\":null,\"native_finish_reason\":null}]}",
+    "data: {\"id\":\"gen-1793148908-LvDt6ZVFEK6k4yiZAgfD\",\"object\":\"chat.completion.chunk\",\"created\":1793148908,\"model\":\"openai/gpt-4o-mini\",\"provider\":\"OpenAI\",\"system_fingerprint\":\"fp_a61d6793b9\",\"choices\":[{\"index\":0,\"delta\":{\"content\":\"这样\",\"role\":\"assistant\"},\"finish_reason\":null,\"native_finish_reason\":null}]}",
+    "data: {\"id\":\"gen-1793148908-LvDt6ZVFEK6k4yiZAgfD\",\"object\":\"chat.completion.chunk\",\"created\":1793148908,\"model\":\"openai/gpt-4o-mini\",\"provider\":\"OpenAI\",\"system_fingerprint\":\"fp_a61d6793b9\",\"choices\":[{\"index\":0,\"delta\":{\"content\":\"我们\",\"role\":\"assistant\"},\"finish_reason\":null,\"native_finish_reason\":null}]}",
+    "data: {\"id\":\"gen-1793148908-LvDt6ZVFEK6k4yiZAgfD\",\"object\":\"chat.completion.chunk\",\"created\":1793148908,\"model\":\"openai/gpt-4o-mini\",\"provider\":\"OpenAI\",\"system_fingerprint\":\"fp_a61d6793b9\",\"choices\":[{\"index\":0,\"delta\":{\"content\":\"可以\",\"role\":\"assistant\"},\"finish_reason\":null,\"native_finish_reason\":null}]}",
+    "data: {\"id\":\"gen-1793148908-LvDt6ZVFEK6k4yiZAgfD\",\"object\":\"chat.completion.chunk\",\"created\":1793148908,\"model\":\"openai/gpt-4o-mini\",\"provider\":\"OpenAI\",\"system_fingerprint\":\"fp_a61d6793b9\",\"choices\":[{\"index\":0,\"delta\":{\"content\":\"更\",\"role\":\"assistant\"},\"finish_reason\":null,\"native_finish_reason\":null}]}",
+    "data: {\"id\":\"gen-1793148908-LvDt6ZVFEK6k4yiZAgfD\",\"object\":\"chat.completion.chunk\",\"created\":1793148908,\"model\":\"openai/gpt-4o-mini\",\"provider\":\"OpenAI\",\"system_fingerprint\":\"fp_a61d6793b9\",\"choices\":[{\"index\":0,\"delta\":{\"content\":\"好\",\"role\":\"assistant\"},\"finish_reason\":null,\"native_finish_reason\":null}]}",
+    "data: {\"id\":\"gen-1793148908-LvDt6ZVFEK6k4yiZAgfD\",\"object\":\"chat.completion.chunk\",\"created\":1793148908,\"model\":\"openai/gpt-4o-mini\",\"provider\":\"OpenAI\",\"system_fingerprint\":\"fp_a61d6793b9\",\"choices\":[{\"index\":0,\"delta\":{\"content\":\"地\",\"role\":\"assistant\"},\"finish_reason\":null,\"native_finish_reason\":null}]}",
+    "data: {\"id\":\"gen-1793148908-LvDt6ZVFEK6k4yiZAgfD\",\"object\":\"chat.completion.chunk\",\"created\":1793148908,\"model\":\"openai/gpt-4o-mini\",\"provider\":\"OpenAI\",\"system_fingerprint\":\"fp_a61d6793b9\",\"choices\":[{\"index\":0,\"delta\":{\"content\":\"进行\",\"role\":\"assistant\"},\"finish_reason\":null,\"native_finish_reason\":null}]}",
+    "data: {\"id\":\"gen-1793148908-LvDt6ZVFEK6k4yiZAgfD\",\"object\":\"chat.completion.chunk\",\"created\":1793148908,\"model\":\"openai/gpt-4o-mini\",\"provider\":\"OpenAI\",\"system_fingerprint\":\"fp_a61d6793b9\",\"choices\":[{\"index\":0,\"delta\":{\"content\":\"下一\",\"role\":\"assistant\"},\"finish_reason\":null,\"native_finish_reason\":null}]}",
+    "data: {\"id\":\"gen-1793148908-LvDt6ZVFEK6k4yiZAgfD\",\"object\":\"chat.completion.chunk\",\"created\":1793148908,\"model\":\"openai/gpt-4o-mini\",\"provider\":\"OpenAI\",\"system_fingerprint\":\"fp_a61d6793b9\",\"choices\":[{\"index\":0,\"delta\":{\"content\":\"步\",\"role\":\"assistant\"},\"finish_reason\":null,\"native_finish_reason\":null}]}",
+    "data: {\"id\":\"gen-1793148908-LvDt6ZVFEK6k4yiZAgfD\",\"object\":\"chat.completion.chunk\",\"created\":1793148908,\"model\":\"openai/gpt-4o-mini\",\"provider\":\"OpenAI\",\"system_fingerprint\":\"fp_a61d6793b9\",\"choices\":[{\"index\":0,\"delta\":{\"content\":\"。\",\"role\":\"assistant\"},\"finish_reason\":null,\"native_finish_reason\":null}]}",
+    "data: {\"id\":\"gen-1793148908-LvDt6ZVFEK6k4yiZAgfD\",\"object\":\"chat.completion.chunk\",\"created\":1793148908,\"model\":\"openai/gpt-4o-mini\",\"provider\":\"OpenAI\",\"system_fingerprint\":\"fp_a61d6793b9\",\"choices\":[{\"index\":0,\"delta\":{\"content\":\"\",\"role\":\"assistant\"},\"finish_reason\":\"stop\",\"native_finish_reason\":\"stop\"}]}",
+    "data: {\"id\":\"gen-1793148908-LvDt6ZVFEK6k4yiZAgfD\",\"object\":\"chat.completion.chunk\",\"created\":1793148908,\"model\":\"openai/gpt-4o-mini\",\"provider\":\"OpenAI\",\"system_fingerprint\":\"fp_a61d6793b9\",\"service_tier\":\"default\",\"choices\":[{\"index\":0,\"delta\":{\"content\":\"\",\"role\":\"assistant\"},\"finish_reason\":\"stop\",\"native_finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":227,\"completion_tokens\":39,\"total_tokens\":266,\"cost\":0.00005745,\"is_byok\":false,\"prompt_tokens_details\":{\"cached_tokens\":0,\"cache_write_tokens\":0,\"audio_tokens\":0,\"video_tokens\":0},\"cost_details\":{\"upstream_inference_cost\":0.00005745,\"upstream_inference_prompt_cost\":0.00003405,\"upstream_inference_completions_cost\":0.0000234},\"completion_tokens_details\":{\"reasoning_tokens\":0,\"image_tokens\":0,\"audio_tokens\":0}}}",
+    "data: [DONE]"
+  ],
+  "upstream_status": 200
+}

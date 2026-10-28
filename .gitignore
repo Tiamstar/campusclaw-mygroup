@@ -9,3 +9,4 @@ __pycache__/
 instance/
 *.db
 apitest/report.html
+docs/evidence/llm-trace.json
