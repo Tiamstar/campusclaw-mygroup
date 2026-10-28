@@ -8,7 +8,7 @@ from .auth import csrf_token, protected, require_csrf
 from .mcp import call_tool, validate_tool_refs
 from .models import (Class, Conversation, ConversationMessage, PromptTemplate, Skill, db)
 from .retrieval import (DependencyUnavailable, NOT_FOUND_MESSAGE, _chat_client, _public_hit,
-                        _query_value, active_class_id, search_chunks)
+                        _query_value, active_class_id, search_chunks, valid_citations)
 
 apps = Blueprint("apps", __name__)
 
@@ -268,13 +268,25 @@ def send_message(conversation_id):
     def output():
         yield sse("meta", {"citations": citations,
                            "tool_calls": [{k: v for k, v in x.items() if k != "content"} for x in tool_calls]})
-        answer = ""
         try:
             chat = _chat_client()
-            chunks = chat.stream(messages) if hasattr(chat, "stream") else [chat.answer(messages)]
-            for chunk in chunks:
-                answer += chunk
-                yield sse("delta", {"content": chunk})
+            for attempt in range(2):
+                request_messages = messages if attempt == 0 else [
+                    {**messages[0], "content": messages[0]["content"] +
+                     f"\n引用格式校正：上一轮回答未通过引用校验。请仅根据本轮提供的资料重新回答；"
+                     f"至少使用一个出处编号，编号只能是 [1] 到 [{len(hits)}]，每项依据后标注对应编号。"
+                     "不能确定出处的内容请删除，不要编造编号。"},
+                    *messages[1:],
+                ]
+                chunks = chat.stream(request_messages) if hasattr(chat, "stream") else [chat.answer(request_messages)]
+                # A draft must pass validation before it can reach the browser or history.
+                answer = "".join(chunks)
+                if valid_citations(answer, len(hits)):
+                    break
+            else:
+                yield sse("done", {"status": "error", "error": "invalid_model_citation"})
+                return
+            yield sse("delta", {"content": answer})
             db.session.add(ConversationMessage(conversation_id=saved_conversation_id, role="assistant", content=answer))
             db.session.commit()
             yield sse("done", {"status": "ok", "answer": answer})

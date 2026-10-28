@@ -18,6 +18,12 @@ retrieval = Blueprint("retrieval", __name__)
 NOT_FOUND_MESSAGE = "资料中未找到相关内容"
 
 
+def valid_citations(answer, source_count):
+    """Require at least one citation and reject numbers outside this request's hits."""
+    markers = {int(number) for number in re.findall(r"\[(\d+)\]", answer)}
+    return bool(markers) and all(1 <= number <= source_count for number in markers)
+
+
 class DependencyUnavailable(RuntimeError):
     pass
 
@@ -601,8 +607,6 @@ def ask():
         ])
     except DependencyUnavailable:
         return jsonify(error="retrieval_dependency_unavailable"), 503
-    allowed = {str(number) for number in range(1, len(hits) + 1)}
-    markers = set(re.findall(r"\[(\d+)\]", answer))
-    if not markers or not markers.issubset(allowed):
+    if not valid_citations(answer, len(hits)):
         return jsonify(error="invalid_model_citation"), 502
     return jsonify(answer=answer, citations=[_public_hit(hit) for hit in hits])

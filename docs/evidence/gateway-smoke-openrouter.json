@@ -1,0 +1,15 @@
+{
+  "checked_at": "2026-10-28T02:31:26.726929+00:00",
+  "gateway": "openrouter",
+  "host": "openrouter.ai",
+  "model": "openai/gpt-4o-mini",
+  "http_status": 200,
+  "model_requests": 1,
+  "retrieved_sources": 1,
+  "status": "ok",
+  "citation_numbers": [
+    1
+  ],
+  "answer": "代数方程解题的步骤如下：\n\n1. 列出已知条件。\n2. 对等式两边进行相同的运算，以保持等式的平衡。\n\n这些步骤可以帮助你系统地解决代数方程问题。[1]",
+  "error": null
+}

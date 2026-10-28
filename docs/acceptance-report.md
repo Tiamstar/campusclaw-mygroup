@@ -6,7 +6,7 @@
 
 CampusClaw 是面向教师和学生的班级课程材料与 AI 应用平台。Flask 提供网页和同源 API，SQLite 保存用户、班级、会话、课程正文、提示词、技能、MCP 登记与审计；SQLite FTS5 和可选的 Qdrant 支持关键词、向量和混合检索。教师上传本班材料后，学生可以在“解题助手”“课堂问答”“材料摘要”三个内置应用中创建流式会话。教师可配置提示词、上传 Markdown Skill、连接同仓的 MCP 工具服务。网页使用 Cookie 会话；接口也支持 `POST /api/login` 取得 Bearer 令牌。
 
-图 1 为 2026-10-28 在隔离本地运行环境中，以演示教师账号实际登录后的班级首页。该图证明网页、登录和班级数据可用；它不证明模型传参，后者以脱敏请求记录为准。
+图 1 为隔离本地运行环境中，以演示教师账号实际登录后的班级首页。该图证明网页、登录和班级数据可用；它不证明模型传参，后者以脱敏请求记录为准。
 
 ![图 1：教师登录后的班级首页。](evidence/01-running-dashboard.png)
 
@@ -28,13 +28,9 @@ CampusClaw 是面向教师和学生的班级课程材料与 AI 应用平台。Fl
 
 ## 3. 验证方法与范围
 
-验证分为两层。第一层是自动测试：Flask 测试客户端走真实 API、SQLite 和检索逻辑，本机 HTTP 假模型记录 `/chat/completions` 请求并返回固定 SSE；同仓 MCP 服务以本机 HTTP 启动，验证鉴权、发现、调用、断开和审计。它能稳定检查参数组装和班级隔离。第二层是 2026-10-28 的现场演示：隔离的本地 CampusClaw 与 MCP 服务运行，聊天网关接到环境变量提供的 OpenRouter API Key，模型为 `openai/gpt-4o-mini`；脱敏代理只记录请求体、响应事件和被遮蔽的鉴权头。浏览器截图来自真实页面操作。此环境没有配置嵌入模型和 Qdrant，流式会话按代码回退到本班关键词检索；此演示不能代表向量检索质量。
+验证分为两层。第一层是自动测试：Flask 测试客户端走真实 API、SQLite 和检索逻辑，本机 HTTP 假模型记录 `/chat/completions` 请求并返回固定 SSE；同仓 MCP 服务以本机 HTTP 启动，验证鉴权、发现、调用、断开和审计。它能稳定检查参数组装和班级隔离。第二层是现场演示：隔离的本地 CampusClaw 与 MCP 服务运行，聊天网关接到环境变量提供的 OpenRouter API Key，模型为 `openai/gpt-4o-mini`；脱敏代理只记录请求体、响应事件和被遮蔽的鉴权头。浏览器截图来自真实页面操作。此环境没有配置嵌入模型和 Qdrant，流式会话按代码回退到本班关键词检索；此演示不能代表向量检索质量。
 
-此前还以独立 Compose 项目构建并启动 Nginx、主应用、Qdrant 和 MCP 服务，经公开的 8000 端口完成健康检查、Swagger 静态文件、Bearer 登录、应用列表、MCP 发现、技能绑定与断开冒烟验收；验收后已停止容器并删除临时数据卷。真实 OpenRouter 演示是独立本地运行，不能据此声称课程网关本身已验证。
-
-测试命令与结果：`.venv/bin/pytest -q`：38 passed；`.venv/bin/python apitest/run_all.py`：10/10 passed，生成 `apitest/report.html`（已忽略 Git）；`SECRET_KEY=validation-only MCP_AUTH_TOKEN=validation-only docker compose config --quiet`：通过；临时 Compose 构建与 `scripts/compose_smoke.py`：通过。端到端断言位于 `tests/test_apps.py`，API 脚本位于 `apitest/cases/`。
-
-截图证据位于 `docs/evidence/`。其中 PNG 为浏览器实际页面或由已保存 JSON 生成的脱敏取证图；`llm-trace-connected.json` 保存连接 MCP 时的模型请求和原始 SSE，`llm-trace-disconnected.json` 保存断开后的请求，`llm-trace-knowledge-limit.json` 和 `knowledge-limit.json` 保存六份材料的对照。原始 Key 没有写入这些文件。复现时先在环境变量设置 `OPENROUTER_BASE_URL` 和 `OPENROUTER_API_KEY`，安装 `.[evidence]` 与匹配的 Chromium，再依次启动 `scripts/report_live_runtime.py`，在另一终端运行 `scripts/capture_report_evidence.py`、`scripts/capture_knowledge_limit.py`、`scripts/build_report_figures.py` 和 `scripts/build_acceptance_pdf.py`。该流程会产生真实模型调用；截图脚本可用 `CAMPUSCLAW_BROWSER` 指定浏览器可执行文件。
+此前还以独立 Compose 项目构建并启动 Nginx、主应用、Qdrant 和 MCP 服务，经公开的 8000 端口完成健康检查、Swagger 静态文件、Bearer 登录、应用列表、MCP 发现、技能绑定与断开冒烟验收；验收后已停止容器并删除临时数据卷。
 
 ![图 4：本地 Swagger 页面可打开并列出主要接口。](evidence/10-swagger-api.png)
 
@@ -57,9 +53,11 @@ CampusClaw 是面向教师和学生的班级课程材料与 AI 应用平台。Fl
 }
 ```
 
-**结论：提示词模板内容会一并传递**，位于第一条 system 消息，`{{question}}` 已被替换。真实网关返回 HTTP 200、33 个含文本的 SSE 增量事件，最后为 `data: [DONE]`；拼接后的回答为“好的，首先我们来列出已知条件。请告诉我这个代数方程的具体形式，以及你已经知道的任何相关信息。”。平台向浏览器依次发送 `meta`（引用与工具状态）、多个 `delta`（文本增量）、`done`（`status=ok`、完整答案），并保存用户与助手消息。旧 `/api/ask` 是非流式接口，参数为 `model`、`messages`、`stream=false`，返回从 `choices[0].message.content` 提取的文本并检查引用编号。
+**结论：提示词模板内容会一并传递**，位于第一条 system 消息，`{{question}}` 已被替换。原始演示中的真实网关返回 HTTP 200、33 个含文本的 SSE 增量事件，最后为 `data: [DONE]`；拼接后的回答为“好的，首先我们来列出已知条件。请告诉我这个代数方程的具体形式，以及你已经知道的任何相关信息。”。原始版本向浏览器依次发送 `meta`、多个 `delta`、`done` 并保存用户与助手消息。旧 `/api/ask` 是非流式接口，参数为 `model`、`messages`、`stream=false`，返回从 `choices[0].message.content` 提取的文本并检查引用编号。
 
-本次真实回答没有在正文写出 `[1]`，虽然页面在回答旁展示了 `algebra.md #0` 引用。当前流式接口没有对最终文本强制做引用编号校验；这说明“有来源元数据”与“模型回答逐句引用来源”是两项不同的验收条件，后者仍需改进。图 5 是脱敏抓包的可视化，原始 SSE 保留在 JSON 文件中。
+原始演示的回答没有在正文写出 `[1]`，虽然页面在回答旁展示了 `algebra.md #0` 引用。为解决这个问题，现版本先收齐模型的流式草稿，校验至少含一个引用编号且所有编号都在本轮命中切片的范围内；漏引或越界时，附加明确的引用格式约束再请求一次。只有通过校验的答案才作为 SSE `delta` 发送并保存；两次均不合格时返回 `done.status=error`、`error=invalid_model_citation`，不展示或保存草稿。这样会延后浏览器收到正文的时间，SSE 连接仍保持打开。该校验只检查编号存在与范围，不能自动证明每句话都由对应资料支持。
+
+本次改进后，以同一个 OpenRouter 模型通过完整应用链路复测：HTTP 200、命中 1 个切片、模型调用 1 次、`done.status=ok`，回答正文含 `[1]`；脱敏结果见 `evidence/gateway-smoke-openrouter.json`。自动测试另覆盖首次漏引后重试成功，以及两次无效时拦截草稿和不保存助手消息；完整测试为 39 passed。图 5 和原始 SSE 仍对应改进前的演示，不应把新结果归到该截图。
 
 ![图 5：真实模型请求参数、模板、Skill、检索片段、MCP 结果和返回文本。](evidence/07-llm-request-response.png)
 
@@ -110,4 +108,4 @@ LLM 参数仍是第 4 节的 `model`、`messages`、`stream=true`、`temperature
 
 ![图 11：无知识库命中时返回明确提示。](evidence/11-no-evidence-no-model.png)
 
-五项必备功能和五项传参/执行问题均有代码级、HTTP 级和对应的图像证据；完整 Compose 栈的本地冒烟检查也已通过。2026-10-28 使用环境中已有的 OpenRouter Key 完成了真实流式模型调用，证实平台与兼容接口的联通。**课程指定网关仍未单独验收**，且本次真实模型回答未写出 `[1]`；建议为流式会话增加引用编号校验或重试，并在目标网关复测。扫描版 PDF 仍无 OCR，SQLite 单实例设计不适合生产高可用。
+五项必备功能和五项传参/执行问题均有代码级、HTTP 级和对应的图像证据；完整 Compose 栈的本地冒烟检查也已通过。使用环境中已有的 OpenRouter Key 完成了真实模型复测，新的回答正文含合法 `[1]`。引用编号校验和一次重试已实现，但编号存在不等于逐句事实核验。**课程指定网关仍未单独验收**：当前环境只有 OpenRouter Key，缺少课程网关凭据。取得凭据后设置 `CHAT_API_KEY`，运行 `.venv/bin/python scripts/verify_chat_gateway.py --gateway course`；脚本在隔离数据库中上传材料、创建真实会话、调用目标网关，并输出状态、模型请求次数和引用编号，不保存密钥。只有脚本成功且目标主机、模型和响应内容符合课程要求，才能将该项标记为通过。

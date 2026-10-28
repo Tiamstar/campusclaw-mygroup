@@ -15,6 +15,7 @@ from test_retrieval import FakeEmbedding, FakeQdrant
 
 class ModelHandler(BaseHTTPRequestHandler):
     calls = []
+    responses = []
 
     def log_message(self, *args):
         pass
@@ -22,7 +23,8 @@ class ModelHandler(BaseHTTPRequestHandler):
     def do_POST(self):
         body = json.loads(self.rfile.read(int(self.headers["Content-Length"])))
         type(self).calls.append({"path": self.path, "headers": dict(self.headers), "body": body})
-        response = ('data: {"choices":[{"delta":{"content":"先列出已知条件。[1]"}}]}\n\n'
+        content = type(self).responses.pop(0) if type(self).responses else "先列出已知条件。[1]"
+        response = ('data: ' + json.dumps({"choices": [{"delta": {"content": content}}]}, ensure_ascii=False) + '\n\n'
                     'data: [DONE]\n\n').encode()
         self.send_response(200)
         self.send_header("Content-Type", "text/event-stream")
@@ -134,6 +136,54 @@ def test_apps_prompt_skill_mcp_stream_and_audit(app, monkeypatch):
             assert db.session.query(MCPAudit).count() == 2
     finally:
         model_server.shutdown(); mcp_server.shutdown()
+
+
+def test_stream_citation_retry_rejects_invalid_drafts(app):
+    model_server = ThreadingHTTPServer(("127.0.0.1", 0), ModelHandler)
+    thread = threading.Thread(target=model_server.serve_forever, daemon=True)
+    thread.start()
+    ModelHandler.calls.clear()
+    app.extensions["chat_client"] = ChatClient(JsonGateway(
+        f"http://127.0.0.1:{model_server.server_port}", "test-model-key", retries=0), "test-chat")
+    try:
+        teacher = app.test_client()
+        teacher_headers = bearer(teacher, "teacher_a")
+        own_class = class_ids(app)["A班"]
+        upload = teacher.post(f"/api/classes/{own_class}/materials", headers=teacher_headers,
+            data={"file": (BytesIO("代数方程解题步骤：先列出已知条件。".encode()), "algebra.md")})
+        assert upload.status_code == 201
+        student = app.test_client()
+        student_headers = bearer(student, "student_a")
+        conversation = student.post("/api/conversations", headers=student_headers,
+                                    json={"app_key": "tutor"})
+        cid = conversation.json["conversation"]["id"]
+        path = f"/api/conversations/{cid}/messages"
+
+        ModelHandler.responses = ["没有注明出处的草稿。", "依据资料，先列出已知条件。[1]"]
+        response = student.post(path, headers=student_headers, json={"query": "代数方程解题步骤"})
+        frames = response.get_data(as_text=True)
+        assert response.status_code == 200
+        assert '"status": "ok"' in frames
+        assert "没有注明出处的草稿" not in frames
+        assert "依据资料，先列出已知条件。[1]" in frames
+        assert len(ModelHandler.calls) == 2
+        assert "引用格式校正" in ModelHandler.calls[1]["body"]["messages"][0]["content"]
+        assert student.get(f"/api/conversations/{cid}", headers=student_headers).json["messages"][-1] == {
+            "role": "assistant", "content": "依据资料，先列出已知条件。[1]"}
+
+        ModelHandler.responses = ["错误出处。[9]", "还是没有出处。"]
+        failed = student.post(path, headers=student_headers, json={"query": "代数方程解题步骤"})
+        failed_frames = failed.get_data(as_text=True)
+        assert '"status": "error"' in failed_frames
+        assert '"error": "invalid_model_citation"' in failed_frames
+        assert "错误出处" not in failed_frames and "还是没有出处" not in failed_frames
+        assert 'event: delta' not in failed_frames
+        assert len(ModelHandler.calls) == 4
+        history = student.get(f"/api/conversations/{cid}", headers=student_headers).json["messages"]
+        assert [item["role"] for item in history] == ["user", "assistant", "user"]
+    finally:
+        ModelHandler.responses = []
+        model_server.shutdown()
 
 
 def test_mcp_json_rpc_and_openapi(monkeypatch, app):

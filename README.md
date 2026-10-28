@@ -55,6 +55,10 @@ POST /api/conversations/<id>/messages {"query":"下一步怎么做？"}
 
 最后一个接口返回 `text/event-stream`，事件顺序为 `meta`（引用和工具状态）、`delta`（文本增量）、`done`（最终状态和回答）。新应用接口的班级从服务端活动会话读取，不相信请求体的 `class_id`。测试命令 `.venv/bin/pytest -q` 与 `.venv/bin/python apitest/run_all.py`；后者在 `apitest/report.html` 生成不提交 Git 的 HTML 记录。完整验收和 LLM 参数样例见 `docs/acceptance-report.pdf`。
 
+流式会话会先收齐模型答案，检查至少一个 `[1]` 等引用编号且编号属于本轮检索结果；不合格时最多重试一次。通过校验的答案才会作为 SSE `delta` 发给浏览器并写入历史；仍不合格则以 `done.error=invalid_model_citation` 结束。正文因此会在模型完成后显示。编号校验只检查格式和范围，不保证每句话都被资料支持。
+
+课程指定网关的独立复测需使用该网关自己的凭据。设置 `CHAT_API_KEY`（可选 `CHAT_BASE_URL`、`CHAT_MODEL`）后运行 `.venv/bin/python scripts/verify_chat_gateway.py --gateway course`；脚本使用临时数据库、真实上传与会话，输出目标主机、HTTP 状态、模型请求次数、来源数和引用编号，退出后删除临时数据。现有 OpenRouter 环境可运行 `--gateway openrouter` 作兼容接口回归；OpenRouter 通过不等于课程网关通过。
+
 检索 API 使用登录会话在服务端记录的活动班级，不接受请求中的 `class_id` 作为授权依据：
 
 ```text
